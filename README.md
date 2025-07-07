@@ -1,9 +1,7 @@
 # AgriSaarthi
 Collage sem -4 python + fsd project.
 
-Here’s a clean, professional **prompt** you can use for GitHub, documentation, or submission describing your **first step** in the Agrisaarthi project:
 
----
 
 ## 🚀 Agrisaarthi – Farmer Assistant Platform
 
