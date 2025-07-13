@@ -1,25 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import RoleSelection from "./pages/RoleSelection";
 
 function App() {
+  // Simulate getting user role from localStorage or API (replace with real logic)
+  const userRole = localStorage.getItem("userRole");
+  const token = localStorage.getItem("token");
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/dashboard" element={token && userRole ? <Dashboard /> : <Navigate to="/select-role" />} />
+        <Route path="/select-role" element={token && !userRole ? <RoleSelection /> : <Navigate to="/dashboard" />} />
+      </Routes>
+    </Router>
   );
 }
 

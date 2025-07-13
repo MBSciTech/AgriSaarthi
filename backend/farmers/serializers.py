@@ -1,16 +1,22 @@
 from rest_framework import serializers
-from .models import Farmer
+from .models import User
 
-class FarmerRegistrationSerializer(serializers.ModelSerializer):
+class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Farmer
-        fields = ['phone', 'name', 'region', 'password']
+        model = User
+        fields = ['phone', 'name', 'password']
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        farmer = Farmer(**validated_data)
-        farmer.set_password(password)
-        farmer.save()
-        return farmer 
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+        read_only_fields = ['phone', 'name'] 

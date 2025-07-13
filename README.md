@@ -58,3 +58,39 @@ Let’s build! 🌱
 ---
 
 Let me know if you want a version tailored for README.md or GitHub issues format!
+
+Your beautiful, modern landing page for AgriSaarthi has been created at:
+
+```
+frontend/src/pages/LandingPage.js
+```
+
+---
+
+### **How to Use:**
+
+1. **Add a route in your React app (e.g., in `App.js`):**
+   ```jsx
+   import LandingPage from './pages/LandingPage';
+   // ... other imports
+
+   // In your router:
+   <Route path="/" element={<LandingPage />} />
+   ```
+
+2. **Make sure you have `react-router-dom` installed:**
+   ```sh
+   npm install react-router-dom
+   ```
+
+3. **Ensure Tailwind CSS is set up for styling.**  
+   If you need help with Tailwind setup or want a navigation bar, let me know!
+
+---
+
+Would you like:
+- A navigation bar added?
+- The “Get Started” button to link somewhere else?
+- Any other customizations?
+
+Let me know how you’d like to proceed!

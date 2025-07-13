@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import FarmerRegisterView, FarmerLoginView
+from .views import UserRegisterView, UserLoginView, UserProfileView
 
 urlpatterns = [
-    path('register/', FarmerRegisterView.as_view(), name='farmer-register'),
-    path('login/', FarmerLoginView.as_view(), name='farmer-login'),
+    path('register/', UserRegisterView.as_view(), name='user-register'),
+    path('login/', UserLoginView.as_view(), name='user-login'),
+    path('profile/', UserProfileView.as_view(), name='user-profile'),
 ] 
