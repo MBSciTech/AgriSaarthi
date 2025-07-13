@@ -83,7 +83,14 @@ export default function RoleSelection() {
                 src={role.image}
                 alt={role.label}
                 className="card-img-top mx-auto mb-3"
-                style={{ width: 80, height: 80, objectFit: "contain" }}
+                style={{
+                  width: 80,
+                  height: 80,
+                  objectFit: "cover",
+                  borderRadius: '50%',
+                  border: '3px solid var(--bs-success)',
+                  boxSizing: 'border-box'
+                }}
               />
               <h5 className="card-title text-success fw-bold mb-2">{role.label}</h5>
               <p className="card-text text-secondary small">{role.description}</p>
