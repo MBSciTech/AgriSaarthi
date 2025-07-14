@@ -55,6 +55,59 @@ export default function Profile() {
     }
   };
 
+  // Role-based field configuration
+  const roleFieldConfig = {
+    farmer: [
+      { key: 'phone', label: 'Phone', icon: 'fa-phone' },
+      { key: 'region', label: 'Region', icon: 'fa-map-marker-alt' },
+      { key: 'village', label: 'Village', icon: 'fa-home' },
+      { key: 'main_crops', label: 'Main Crops', icon: 'fa-seedling' },
+      { key: 'farm_size', label: 'Farm Size', icon: 'fa-warehouse' },
+      { key: 'preferred_language', label: 'Preferred Language', icon: 'fa-language' },
+      { key: 'type_of_farming', label: 'Type of Farming', icon: 'fa-tractor' },
+    ],
+    expert_advisor: [
+      { key: 'phone', label: 'Phone', icon: 'fa-phone' },
+      { key: 'region', label: 'Region', icon: 'fa-map-marker-alt' },
+      { key: 'expertise_area', label: 'Expertise Area', icon: 'fa-user-graduate' },
+      { key: 'experience_years', label: 'Experience (Years)', icon: 'fa-award' },
+      { key: 'languages_spoken', label: 'Languages Spoken', icon: 'fa-language' },
+      { key: 'available_for_consult', label: 'Available for Consult', icon: 'fa-comments' },
+    ],
+    administrator: [
+      { key: 'phone', label: 'Phone', icon: 'fa-phone' },
+      { key: 'email', label: 'Email', icon: 'fa-envelope' },
+      { key: 'designation', label: 'Designation', icon: 'fa-user-tie' },
+      { key: 'region_of_responsibility', label: 'Region of Responsibility', icon: 'fa-map' },
+      { key: 'access_level', label: 'Access Level', icon: 'fa-key' },
+      { key: 'employee_id', label: 'Employee ID', icon: 'fa-id-badge' },
+    ],
+    retailer: [
+      { key: 'phone', label: 'Phone', icon: 'fa-phone' },
+      { key: 'business_name', label: 'Business Name', icon: 'fa-store' },
+      { key: 'location', label: 'Location', icon: 'fa-map-marker-alt' },
+      { key: 'type_of_business', label: 'Type of Business', icon: 'fa-briefcase' },
+      { key: 'interested_crops', label: 'Interested Crops', icon: 'fa-seedling' },
+    ],
+    government_official: [
+      { key: 'phone', label: 'Phone', icon: 'fa-phone' },
+      { key: 'email', label: 'Email', icon: 'fa-envelope' },
+      { key: 'designation', label: 'Designation', icon: 'fa-user-tie' },
+      { key: 'department', label: 'Department', icon: 'fa-building' },
+      { key: 'region_of_responsibility', label: 'Region of Responsibility', icon: 'fa-map' },
+      { key: 'govt_id', label: 'Govt. ID', icon: 'fa-id-card' },
+    ],
+  };
+
+  // Role-based profile images
+  const roleImage = {
+    farmer: '/images/roles/farmer.png',
+    administrator: '/images/roles/administrator.png',
+    government_official: '/images/roles/government_official.png',
+    expert_advisor: '/images/roles/expert_advisor.png',
+    retailer: '/images/roles/retailer.png',
+  };
+
   return (
     <div
       style={{
@@ -79,7 +132,7 @@ export default function Profile() {
           {/* Avatar, Name, Role */}
           <div className="d-flex flex-row align-items-center w-100 mb-4" style={{gap: 24}}>
             <img
-              src={"/images/roles/farmer.png"}
+              src={roleImage[profile?.role] || "/images/roles/farmer.png"}
               alt="Profile"
               style={{ width: 110, height: 110, borderRadius: "50%", objectFit: "cover", border: "4px solid rgb(3, 98, 76)", background: "#fff", boxShadow: "0 2px 8px #0002" }}
             />
@@ -123,43 +176,23 @@ export default function Profile() {
             <>
               {success && <div className="alert alert-success text-center">{success}</div>}
               <div className="row w-100 g-3 mb-2">
-                <div className="col-12 col-md-6">
-                  <div className="d-flex align-items-center bg-light rounded-3 px-3 py-2 shadow-sm h-100">
-                    <i className="fas fa-phone fa-lg text-success me-3"></i>
-                    <div>
-                      <div className="fw-semibold text-secondary small">Phone</div>
-                      <div className="fw-bold">{profile.phone}</div>
+                {(roleFieldConfig[profile.role] || Object.keys(profile).map(key => ({ key, label: key, icon: 'fa-info-circle' }))).map(field => (
+                  <div className="col-12 col-md-6" key={field.key}>
+                    <div className="d-flex align-items-center bg-light rounded-3 px-3 py-2 shadow-sm h-100">
+                      <i className={`fas ${field.icon} fa-lg text-success me-3`}></i>
+                      <div>
+                        <div className="fw-semibold text-secondary small">{field.label}</div>
+                        <div className="fw-bold">{profile[field.key] || '-'}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="col-12 col-md-6">
-                  <div className="d-flex align-items-center bg-light rounded-3 px-3 py-2 shadow-sm h-100">
-                    <i className="fas fa-map-marker-alt fa-lg text-success me-3"></i>
-                    <div>
-                      <div className="fw-semibold text-secondary small">Region</div>
-                      <div className="fw-bold">{profile.region || profile.state || "-"}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-12 col-md-6">
-                  <div className="d-flex align-items-center bg-light rounded-3 px-3 py-2 shadow-sm h-100">
-                    <i className="fas fa-seedling fa-lg text-success me-3"></i>
-                    <div>
-                      <div className="fw-semibold text-secondary small">Main Crops</div>
-                      <div className="fw-bold">{profile.main_crops || "-"}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-12 col-md-6">
-                  <div className="d-flex align-items-center bg-light rounded-3 px-3 py-2 shadow-sm h-100">
-                    <i className="fas fa-warehouse fa-lg text-success me-3"></i>
-                    <div>
-                      <div className="fw-semibold text-secondary small">Farm Size</div>
-                      <div className="fw-bold">{profile.farm_size || "-"}</div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
+              {/* Debug: Show raw profile JSON for troubleshooting */}
+              <details className="mt-4 w-100">
+                <summary style={{ cursor: 'pointer', color: '#888', fontSize: 14 }}>Show raw profile JSON (debug)</summary>
+                <pre style={{ fontSize: 12, background: '#f8f9fa', borderRadius: 8, padding: 12, marginTop: 8, maxHeight: 200, overflow: 'auto' }}>{JSON.stringify(profile, null, 2)}</pre>
+              </details>
 
               {/* Edit Mode Overlay */}
               {editMode && (
