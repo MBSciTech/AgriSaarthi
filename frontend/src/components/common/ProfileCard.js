@@ -1,9 +1,9 @@
 import React from "react";
-import GlassCard from "../common/GlassCard";
+import GlassCard from "./GlassCard";
 
 export default function ProfileCard({ profile }) {
   return (
-    <a href="/profile" style={{ textDecoration: 'none' }}>
+    <a href="/profile" style={{ textDecoration: 'none',color:'black' }}>
       <GlassCard className="profile-card-hover">
         <div className="d-flex align-items-center mb-3">
           <i className="fas fa-user-circle fa-2x text-success me-2"></i>

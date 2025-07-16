@@ -8,6 +8,9 @@ from .serializers import UserRegistrationSerializer, UserProfileSerializer
 from .models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+import requests
+
+OPENWEATHER_API_KEY = "2a496ed70c4234605ff47cea15a3bd6a"
 
 # Create your views here.
 
@@ -51,3 +54,39 @@ class UserProfileView(APIView):
                 user.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class WeatherAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        lat = request.query_params.get('lat')
+        lon = request.query_params.get('lon')
+        if not lat or not lon:
+            return Response({'error': 'lat and lon are required'}, status=400)
+        url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPENWEATHER_API_KEY}&units=metric"
+        try:
+            resp = requests.get(url, timeout=5)
+            data = resp.json()
+            if resp.status_code != 200:
+                return Response({'error': data.get('message', 'Failed to fetch weather')}, status=resp.status_code)
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+class WeatherForecastAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        lat = request.query_params.get('lat')
+        lon = request.query_params.get('lon')
+        if not lat or not lon:
+            return Response({'error': 'lat and lon are required'}, status=400)
+        url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={OPENWEATHER_API_KEY}&units=metric"
+        try:
+            resp = requests.get(url, timeout=5)
+            data = resp.json()
+            if resp.status_code != 200:
+                return Response({'error': data.get('message', 'Failed to fetch forecast')}, status=resp.status_code)
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)

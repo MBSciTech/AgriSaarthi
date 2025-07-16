@@ -5,6 +5,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import RoleSelection from "./pages/RoleSelection";
 import Profile from "./pages/Profile";
+import Weather from "./pages/Weather";
 
 function App() {
   // Simulate getting user role from localStorage or API (replace with real logic)
@@ -19,6 +20,7 @@ function App() {
         <Route path="/dashboard" element={token && userRole ? <Dashboard /> : <Navigate to="/select-role" />} />
         <Route path="/select-role" element={token && !userRole ? <RoleSelection /> : <Navigate to="/dashboard" />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/weather" element={<Weather />} />
       </Routes>
     </Router>
   );

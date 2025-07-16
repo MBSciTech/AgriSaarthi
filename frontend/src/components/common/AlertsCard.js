@@ -1,5 +1,5 @@
 import React from "react";
-import GlassCard from "../common/GlassCard";
+import GlassCard from "./GlassCard";
 
 export default function AlertsCard() {
   return (

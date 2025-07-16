@@ -1,10 +1,10 @@
 import React from "react";
 import DashboardNavbar from "../../components/common/DashboardNavbar";
 import FarmerDashboardHeader from "../../components/Farmer/FarmerDashboardHeader";
-import ProfileCard from "../../components/Farmer/ProfileCard";
-import WeatherCard from "../../components/Farmer/WeatherCard";
-import MarketCard from "../../components/Farmer/MarketCard";
-import AlertsCard from "../../components/Farmer/AlertsCard";
+import ProfileCard from "../../components/common/ProfileCard";
+import WeatherCard from "../../components/common/WeatherCard";
+import MarketCard from "../../components/common/MarketCard";
+import AlertsCard from "../../components/common/AlertsCard";
 
 export default function FarmerDashboard({ profile }) {
   // Placeholder avatar (could use profile.profile_image if available)

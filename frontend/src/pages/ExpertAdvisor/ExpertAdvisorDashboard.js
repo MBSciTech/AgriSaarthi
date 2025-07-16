@@ -2,9 +2,10 @@ import React from "react";
 import DashboardNavbar from "../../components/common/DashboardNavbar";
 import ExpertAdvisorProfileForm from "../../components/ExpertAdvisor/ExpertAdvisorProfileForm";
 import GlassCard from "../../components/common/GlassCard";
-import WeatherCard from "../../components/Farmer/WeatherCard";
-import MarketCard from "../../components/Farmer/MarketCard";
-import AlertsCard from "../../components/Farmer/AlertsCard";
+import ProfileCard from "../../components/common/ProfileCard";
+import WeatherCard from "../../components/common/WeatherCard";
+import MarketCard from "../../components/common/MarketCard";
+import AlertsCard from "../../components/common/AlertsCard";
 
 function ExpertAdvisorDashboardHeader({ name }) {
   return (
