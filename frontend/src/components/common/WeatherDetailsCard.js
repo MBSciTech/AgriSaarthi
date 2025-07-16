@@ -6,7 +6,7 @@ export default function WeatherDetailsCard({ weather, formatTime, loading, error
       className="glass-card shadow-lg p-4 w-100 d-flex flex-column justify-content-center"
       style={{
         borderRadius: 32,
-        background: "rgba(255,255,255,0.96)",
+        background: `linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.82)), url('/images/weather/weather_farm_background.jpg') center/cover no-repeat`,
         boxShadow: "0 8px 32px 0 rgba(34,139,34,0.12)",
         backdropFilter: "blur(12px)",
         border: "1.5px solid #e6f4ea",
