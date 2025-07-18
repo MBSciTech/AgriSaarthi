@@ -19,4 +19,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-        read_only_fields = ['phone', 'name'] 
+        # read_only_fields = ['phone', 'name']  # Allow updating all fields 

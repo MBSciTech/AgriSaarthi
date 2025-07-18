@@ -90,3 +90,31 @@ class WeatherForecastAPIView(APIView):
             return Response(data)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+
+class MarketPriceAPIView(APIView):
+    def get(self, request):
+        API_KEY = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b"
+        RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070"
+        base_url = f"https://api.data.gov.in/resource/{RESOURCE_ID}?api-key={API_KEY}&format=json&limit=100"
+        # Optional filters from query params
+        commodity = request.query_params.get('commodity')
+        state = request.query_params.get('state')
+        market = request.query_params.get('market')
+        filters = []
+        if commodity:
+            filters.append(f"filters[commodity]={commodity}")
+        if state:
+            filters.append(f"filters[state]={state}")
+        if market:
+            filters.append(f"filters[market]={market}")
+        url = base_url
+        if filters:
+            url += "&" + "&".join(filters)
+        try:
+            resp = requests.get(url, timeout=5)
+            data = resp.json()
+            if resp.status_code != 200:
+                return Response({'error': data.get('message', 'Failed to fetch market prices')}, status=resp.status_code)
+            return Response(data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)

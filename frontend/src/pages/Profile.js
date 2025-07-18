@@ -42,14 +42,35 @@ export default function Profile() {
     setSuccess("");
     try {
       const token = localStorage.getItem("token");
-      await axios.put("http://localhost:8000/api/users/profile/", form, {
-        headers: { Authorization: `Token ${token}` },
-      });
+      let payload = form;
+      let config = { headers: { Authorization: `Token ${token}` } };
+      // If profile_image is a File, use FormData
+      if (form.profile_image instanceof File) {
+        const formData = new FormData();
+        Object.entries(form).forEach(([key, value]) => {
+          if (key === "profile_image") {
+            if (value) formData.append("profile_image", value);
+          } else {
+            formData.append(key, value);
+          }
+        });
+        payload = formData;
+        config.headers["Content-Type"] = "multipart/form-data";
+      } else {
+        // If profile_image is not a File, do not send it
+        const { profile_image, ...rest } = form;
+        payload = rest;
+      }
+      await axios.put("http://localhost:8000/api/users/profile/", payload, config);
       setSuccess("Profile updated successfully!");
       setEditMode(false);
       setProfile(form);
     } catch (err) {
-      setError("Failed to update profile. Please check your details and try again.");
+      setError(
+        err.response?.data?.error ||
+        (typeof err.response?.data === 'string' ? err.response.data : JSON.stringify(err.response?.data)) ||
+        "Failed to update profile. Please check your details and try again."
+      );
     } finally {
       setSaving(false);
     }
@@ -60,7 +81,7 @@ export default function Profile() {
     farmer: [
       { key: 'phone', label: 'Phone', icon: 'fa-phone' },
       { key: 'region', label: 'Region', icon: 'fa-map-marker-alt' },
-      { key: 'village', label: 'Village', icon: 'fa-home' },
+      { key: 'village', label: 'Village/City', icon: 'fa-home' },
       { key: 'main_crops', label: 'Main Crops', icon: 'fa-seedling' },
       { key: 'farm_size', label: 'Farm Size', icon: 'fa-warehouse' },
       { key: 'preferred_language', label: 'Preferred Language', icon: 'fa-language' },
@@ -226,6 +247,19 @@ export default function Profile() {
                     </div>
                     <div className="mb-3">
                       <label className="form-label fw-semibold">
+                        <i className="fas fa-flag me-2"></i>State
+                      </label>
+                      <input
+                        type="text"
+                        name="state"
+                        className="form-control form-control-lg"
+                        value={form.state || ""}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold">
                         <i className="fas fa-map-marker-alt me-2"></i>Region
                       </label>
                       <input
@@ -233,6 +267,18 @@ export default function Profile() {
                         name="region"
                         className="form-control form-control-lg"
                         value={form.region || form.state || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold">
+                        <i className="fas fa-city me-2"></i>Village/City
+                      </label>
+                      <input
+                        type="text"
+                        name="village"
+                        className="form-control form-control-lg"
+                        value={form.village || ""}
                         onChange={handleChange}
                       />
                     </div>

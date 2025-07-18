@@ -25,18 +25,18 @@ export default function FarmerDashboard({ profile }) {
         <FarmerDashboardHeader name={profile.name} />
 
         {/* Dashboard Widgets */}
-        <div className="row g-4 w-100 h-100" style={{ maxWidth: 1200 }}>
-          <div className="col-12 col-md-6 col-lg-3">
-            <ProfileCard profile={profile} />
+        <div className="d-flex w-100 justify-content-center" style={{ maxWidth: 1200, gap: 24 }}>
+          <div className="d-flex flex-column align-items-stretch" style={{ minWidth: 0, width: 260 }}>
+            <ProfileCard profile={profile} className="h-100 w-100" style={{ minHeight: 220 }} />
           </div>
-          <div className="col-12 col-md-6 col-lg-3">
-            <WeatherCard />
+          <div className="d-flex flex-column align-items-stretch" style={{ minWidth: 0, width: 260 }}>
+            <WeatherCard className="h-100 w-100" style={{ minHeight: 220 }} />
           </div>
-          <div className="col-12 col-md-6 col-lg-3">
-            <MarketCard />
+          <div className="d-flex flex-column align-items-stretch" style={{ minWidth: 0, width: 260 }}>
+            <MarketCard profile={profile} className="h-100 w-100" style={{ minHeight: 220 }} />
           </div>
-          <div className="col-12 col-md-6 col-lg-3">
-            <AlertsCard />
+          <div className="d-flex flex-column align-items-stretch" style={{ minWidth: 0, width: 260 }}>
+            <AlertsCard className="h-100 w-100" style={{ minHeight: 220 }} />
           </div>
         </div>
       </div>

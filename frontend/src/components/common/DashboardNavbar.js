@@ -9,8 +9,8 @@ export default function DashboardNavbar() {
     { label: "Dashboard", icon: "fa-home", href: "/dashboard" },
     { label: "Profile", icon: "fa-user", href: "/profile" },
     { label: "Weather", icon: "fa-cloud-sun", href: "/weather", isWeather: true },
-    { label: "Market", icon: "fa-chart-line", href: "#" },
-    { label: "Alerts", icon: "fa-bell", href: "#" },
+    { label: "Market", icon: "fa-chart-line", href: "/market" },
+    { label: "Alerts", icon: "fa-bell", href: "/Alerts" },
     { label: "Logout", icon: "fa-sign-out-alt", href: "/logout" },
   ];
 

@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import RoleSelection from "./pages/RoleSelection";
 import Profile from "./pages/Profile";
 import Weather from "./pages/Weather";
+import Market from "./pages/Market";
 
 function App() {
   // Simulate getting user role from localStorage or API (replace with real logic)
@@ -21,6 +22,7 @@ function App() {
         <Route path="/select-role" element={token && !userRole ? <RoleSelection /> : <Navigate to="/dashboard" />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/weather" element={<Weather />} />
+        <Route path="/market" element={<Market />} />
       </Routes>
     </Router>
   );

@@ -13,6 +13,7 @@ export default function ProfileCard({ profile }) {
           <li><b>Phone:</b> {profile.phone}</li>
           <li><b>Language:</b> {profile.preferred_language || "-"}</li>
           <li><b>Type:</b> {profile.type_of_farming || "-"}</li>
+          <li><b>Village/City:</b> {profile.village || "-"}</li>
         </ul>
       </GlassCard>
       <style>{`

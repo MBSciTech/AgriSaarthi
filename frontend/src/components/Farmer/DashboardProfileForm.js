@@ -22,27 +22,35 @@ export default function DashboardProfileForm({ role, form, setForm, error, setEr
     setSuccess("");
     setLoading(true);
     const token = localStorage.getItem("token");
-    const formData = new FormData();
-    requiredFields.forEach((field) => {
-      if (form[field] !== undefined) {
-        formData.append(field, form[field]);
-      }
-    });
-    // Add files if present
-    if (form.profile_image) formData.append("profile_image", form.profile_image);
-    if (form.certificates) formData.append("certificates", form.certificates);
-    if (form.gov_id_badge) formData.append("gov_id_badge", form.gov_id_badge);
-    try {
-      await axios.put("http://localhost:8000/api/users/profile/", formData, {
-        headers: {
-          Authorization: `Token ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+    let payload = form;
+    let config = { headers: { Authorization: `Token ${token}` } };
+    // If profile_image is a File, use FormData
+    if (form.profile_image instanceof File) {
+      const formData = new FormData();
+      Object.entries(form).forEach(([key, value]) => {
+        if (key === "profile_image") {
+          if (value) formData.append("profile_image", value);
+        } else {
+          formData.append(key, value);
+        }
       });
+      payload = formData;
+      config.headers["Content-Type"] = "multipart/form-data";
+    } else {
+      // If profile_image is not a File, do not send it
+      const { profile_image, ...rest } = form;
+      payload = rest;
+    }
+    try {
+      await axios.put("http://localhost:8000/api/users/profile/", payload, config);
       setSuccess("Profile updated successfully!");
       setSubmitted(true);
     } catch (err) {
-      setError("Failed to update profile. Please check your details and try again.");
+      setError(
+        err.response?.data?.error ||
+        (typeof err.response?.data === 'string' ? err.response.data : JSON.stringify(err.response?.data)) ||
+        "Failed to update profile. Please check your details and try again."
+      );
     } finally {
       setLoading(false);
     }
