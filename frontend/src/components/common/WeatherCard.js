@@ -58,7 +58,7 @@ export default function WeatherCard() {
               <span className="text-muted ms-2">{weather.weather[0].main} ({weather.weather[0].description})</span>
             </div>
             <div className="text-muted small">
-              <i className="fas fa-map-marker-alt me-1"></i>
+              <i className="fas fa-map-marker-alt me-1 py-2"></i>
               {weather.name}, {weather.sys.country}
             </div>
           </>

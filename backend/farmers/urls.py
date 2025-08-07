@@ -1,11 +1,68 @@
 from django.urls import path
-from .views import UserRegisterView, UserLoginView, UserProfileView, WeatherAPIView, WeatherForecastAPIView, MarketPriceAPIView
+from .views import (
+    UserRegisterView,
+    UserLoginView,
+    UserProfileView,
+    WeatherAPIView,
+    WeatherForecastAPIView,
+    MarketPriceAPIView,
+    GovernmentSchemeListAPIView,
+    scheme_detail,
+    BlogCreateView,
+    BlogListCreateView, 
+    BlogDetailView,
+    CommentListCreateView,
+    VoteCreateView,
+    like_blog,
+    CommentListCreateView,
+    toggle_save_post,
+    get_saved_posts,
+    # Admin views
+    AdminStatsView,
+    AdminUserListView,
+    AdminUserDetailView,
+    AdminBlogListView,
+    AdminBlogDetailView,
+    AdminSchemeListView,
+    AdminSchemeDetailView,
+    test_admin_endpoint,
+    debug_user_status,
+    health_check,
+    test_user_model
+)
+
+from . import views
 
 urlpatterns = [
+    path('schemes/<int:pk>/', scheme_detail, name='scheme-detail'),
+    path('schemes/', GovernmentSchemeListAPIView.as_view(), name='scheme-list'),
     path('register/', UserRegisterView.as_view(), name='user-register'),
     path('login/', UserLoginView.as_view(), name='user-login'),
     path('profile/', UserProfileView.as_view(), name='user-profile'),
     path('weather/', WeatherAPIView.as_view(), name='weather'),
     path('weather-forecast/', WeatherForecastAPIView.as_view(), name='weather-forecast'),
-    path('market-prices/', MarketPriceAPIView.as_view(), name='market-prices'),
-] 
+    path('market-prices/', MarketPriceAPIView.as_view(),name='market-prices'),
+    path('blogs/create/', BlogCreateView.as_view(), name='create-blog'),
+    path('blogs/', BlogListCreateView.as_view(), name='blog-list-create'),
+    path('blogs/<int:pk>/', BlogDetailView.as_view(), name='blog-detail'),
+    path('blogs/<int:blog_id>/comments/', CommentListCreateView.as_view(), name='blog-comments'),
+    path('polls/vote/', VoteCreateView.as_view(), name='vote'),
+    path('blogs/<int:blog_id>/like/', like_blog, name='like-blog'),
+    path('blogs/<int:blog_id>/comment/', CommentListCreateView.as_view(), name='blog-comment'),  
+    path('blogs/<int:blog_id>/toggle-save/',toggle_save_post, name='toggle-save-post'),
+    path('blogs/saved/', get_saved_posts, name='get-saved-posts'),
+    path('blogs/<int:blog_id>/download-pdf/', views.download_blog_pdf, name='download-blog-pdf'),
+
+    # Admin URLs
+    path('health/', health_check, name='health-check'),
+    path('test/user/', test_user_model, name='test-user-model'),
+    path('admin/test/', test_admin_endpoint, name='admin-test'),
+    path('admin/debug/', debug_user_status, name='admin-debug'),
+    path('admin/stats/', AdminStatsView.as_view(), name='admin-stats'),
+    path('admin/users/', AdminUserListView.as_view(), name='admin-users'),
+    path('admin/users/<int:user_id>/', AdminUserDetailView.as_view(), name='admin-user-detail'),
+    path('admin/blogs/', AdminBlogListView.as_view(), name='admin-blogs'),
+    path('admin/blogs/<int:blog_id>/', AdminBlogDetailView.as_view(), name='admin-blog-detail'),
+    path('admin/schemes/', AdminSchemeListView.as_view(), name='admin-schemes'),
+    path('admin/schemes/<int:scheme_id>/', AdminSchemeDetailView.as_view(), name='admin-scheme-detail'),
+]

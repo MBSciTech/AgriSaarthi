@@ -7,6 +7,10 @@ import RoleSelection from "./pages/RoleSelection";
 import Profile from "./pages/Profile";
 import Weather from "./pages/Weather";
 import Market from "./pages/Market";
+import Alerts from "./pages/Alerts";
+import Logout from "./pages/Logout";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 function App() {
   // Simulate getting user role from localStorage or API (replace with real logic)
@@ -23,6 +27,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/weather" element={<Weather />} />
         <Route path="/market" element={<Market />} />
+        <Route path="/Alerts" element={<Alerts />} />
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </Router>
   );

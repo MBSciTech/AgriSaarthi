@@ -5,6 +5,10 @@ import ProfileCard from "../../components/common/ProfileCard";
 import WeatherCard from "../../components/common/WeatherCard";
 import MarketCard from "../../components/common/MarketCard";
 import AlertsCard from "../../components/common/AlertsCard";
+// import BlogFeed from '../../components/BlogFeed';
+import { BlogFeed, CreatePostBox } from '../../components/BlogFeed';
+
+
 
 export default function FarmerDashboard({ profile }) {
   // Placeholder avatar (could use profile.profile_image if available)
@@ -40,6 +44,15 @@ export default function FarmerDashboard({ profile }) {
           </div>
         </div>
       </div>
+      {profile?.role !== 'government_official' && (
+        
+      <>
+        <BlogFeed/>
+        <CreatePostBox profile={profile}/>
+        
+      </>
+
+      )}
       {/* Glassmorphism card style */}
       <style>{`
         .glass-card {
@@ -55,6 +68,7 @@ export default function FarmerDashboard({ profile }) {
           transform: translateY(-4px) scale(1.03);
         }
       `}</style>
+      
     </div>
   );
 } 

@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: rgb(3, 98, 76),
 }
 
 .App-logo {
@@ -35,4 +36,182 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Admin Panel Styles */
+.admin-panel {
+  width: 100%;
+}
+
+.admin-panel .nav-pills .nav-link {
+  color: #6c757d;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 12px;
+  margin: 0 5px;
+  padding: 12px 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.admin-panel .nav-pills .nav-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #495057;
+}
+
+.admin-panel .nav-pills .nav-link.active {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.admin-panel .table {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.admin-panel .table th {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #495057;
+  font-weight: 600;
+  padding: 15px;
+}
+
+.admin-panel .table td {
+  border: none;
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.admin-panel .table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-panel .btn-group .btn {
+  border-radius: 8px;
+  margin: 0 2px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.admin-panel .badge {
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.admin-panel .glass-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid #e6f4ea;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(34, 139, 34, 0.12);
+}
+
+.admin-panel .alert {
+  border-radius: 12px;
+  border: none;
+  font-weight: 500;
+}
+
+.admin-panel .spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Stats Cards */
+.admin-panel .stats-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px 0 rgba(34, 139, 34, 0.12);
+  transition: transform 0.3s ease;
+}
+
+.admin-panel .stats-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Blog Cards */
+.admin-panel .blog-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.admin-panel .blog-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Scheme Cards */
+.admin-panel .scheme-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.admin-panel .scheme-card:hover {
+  transform: translateY(-3px);
+}
+
+/* User Management */
+.admin-panel .user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e6f4ea;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-panel .nav-pills {
+    flex-direction: column;
+  }
+  
+  .admin-panel .nav-pills .nav-link {
+    margin: 2px 0;
+  }
+  
+  .admin-panel .table-responsive {
+    font-size: 14px;
+  }
+  
+  .admin-panel .btn-group .btn {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+
+/* Modal Styles */
+.modal-content {
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-header .btn-close {
+  filter: invert(1);
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-footer {
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.5);
 }

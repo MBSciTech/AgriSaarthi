@@ -6,32 +6,64 @@ function formatTime(unix) {
 }
 
 // Helper to get angle (in radians) for a given time on the circle
-function getAngleForTime(time, sunrise, sunset) {
-  // Map sunrise to 9 o'clock (PI), sunset to 3 o'clock (0)
-  // Anything before sunrise or after sunset wraps around the top
-  const dayLength = sunset - sunrise;
-  let percent;
-  if (time < sunrise) {
-    // Before sunrise: night arc (from 3 o'clock, counterclockwise to 9 o'clock)
-    percent = (time - sunset) / (24 * 60 * 60 - dayLength);
-    if (percent < 0) percent += 1; // wrap
-    // Map to [0, PI]
-    return (1 - percent) * Math.PI;
-  } else if (time > sunset) {
-    // After sunset: night arc (from 3 o'clock, counterclockwise to 9 o'clock)
-    percent = (time - sunset) / (24 * 60 * 60 - dayLength);
-    // Map to [0, PI]
-    return (1 - percent) * Math.PI;
+function getAngleForTime(currentTime, sunrise, sunset) {
+  // Convert current time to seconds since midnight if it's a timestamp
+  let timeOfDay;
+  if (currentTime > 86400) {
+    // It's a unix timestamp, convert to seconds since midnight
+    const date = new Date(currentTime * 1000);
+    timeOfDay = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
   } else {
-    // Day arc: from 9 o'clock (PI) to 3 o'clock (0), clockwise
-    percent = (time - sunrise) / dayLength;
-    // Map to [PI, 0]
-    return Math.PI - percent * Math.PI;
+    // It's already seconds since midnight
+    timeOfDay = currentTime;
+  }
+  
+  // Convert sunrise and sunset to seconds since midnight if they're timestamps
+  let sunriseTime, sunsetTime;
+  if (sunrise > 86400) {
+    const sunriseDate = new Date(sunrise * 1000);
+    sunriseTime = sunriseDate.getHours() * 3600 + sunriseDate.getMinutes() * 60 + sunriseDate.getSeconds();
+  } else {
+    sunriseTime = sunrise;
+  }
+  
+  if (sunset > 86400) {
+    const sunsetDate = new Date(sunset * 1000);
+    sunsetTime = sunsetDate.getHours() * 3600 + sunsetDate.getMinutes() * 60 + sunsetDate.getSeconds();
+  } else {
+    sunsetTime = sunset;
+  }
+  
+  const dayLength = sunsetTime - sunriseTime;
+  
+  if (timeOfDay >= sunriseTime && timeOfDay <= sunsetTime) {
+    // Daytime: sun moves along bottom arc from sunrise (left) to sunset (right)
+    const dayProgress = (timeOfDay - sunriseTime) / dayLength;
+    // Map from 9 o'clock (PI) to 3 o'clock (0) going clockwise (bottom of circle)
+    return Math.PI - (dayProgress * Math.PI);
+  } else {
+    // Nighttime: moon moves along top arc
+    let nightProgress;
+    const nightLength = (24 * 3600) - dayLength;
+    
+    if (timeOfDay > sunsetTime) {
+      // After sunset, before midnight
+      nightProgress = (timeOfDay - sunsetTime) / nightLength;
+    } else {
+      // After midnight, before sunrise
+      nightProgress = ((24 * 3600 - sunsetTime) + timeOfDay) / nightLength;
+    }
+    
+    // Map from 3 o'clock (0) to 9 o'clock (PI) going counterclockwise (top of circle)
+    return nightProgress * Math.PI;
   }
 }
 
 export default function SunPath({ sunrise, sunset, current }) {
-  if (!sunrise || !sunset || !current) return null;
+  if (!sunrise || !sunset) return null;
+  
+  // Use current time if not provided
+  const currentTime = current || Math.floor(Date.now() / 1000);
 
   // SVG setup
   const size = 260;
@@ -40,15 +72,26 @@ export default function SunPath({ sunrise, sunset, current }) {
   const cy = size / 2;
 
   // Angles
-  const sunriseAngle = Math.PI; // 9 o'clock
-  const sunsetAngle = 0;       // 3 o'clock
-  const currentAngle = getAngleForTime(current, sunrise, sunset);
+  const sunriseAngle = Math.PI; // 9 o'clock (left)
+  const sunsetAngle = 0;       // 3 o'clock (right)
+  const currentAngle = getAngleForTime(currentTime, sunrise, sunset);
 
   // Helper to get (x, y) on circle for angle
   const getXY = (angle) => [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
 
   // Determine if current time is day or night
-  const isDay = (current >= sunrise && current <= sunset);
+  let isDay;
+  if (currentTime > 86400) {
+    // Unix timestamp
+    const date = new Date(currentTime * 1000);
+    const timeOfDay = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+    const sunriseTime = sunrise > 86400 ? new Date(sunrise * 1000).getHours() * 3600 + new Date(sunrise * 1000).getMinutes() * 60 : sunrise;
+    const sunsetTime = sunset > 86400 ? new Date(sunset * 1000).getHours() * 3600 + new Date(sunset * 1000).getMinutes() * 60 : sunset;
+    isDay = (timeOfDay >= sunriseTime && timeOfDay <= sunsetTime);
+  } else {
+    // Seconds since midnight
+    isDay = (currentTime >= sunrise && currentTime <= sunset);
+  }
 
   // Arc path for day (sunrise to sunset, lower half)
   const [sx, sy] = getXY(sunriseAngle);
@@ -85,6 +128,7 @@ export default function SunPath({ sunrise, sunset, current }) {
       })}
     </g>
   );
+  
   const Moon = (
     <g>
       <circle cx={px} cy={py} r={15} fill="#b3c6ff" stroke="#fffde4" strokeWidth="3" />
@@ -100,8 +144,15 @@ export default function SunPath({ sunrise, sunset, current }) {
     </g>
   );
 
+  // Current time display
+  const currentTimeString = currentTime > 86400 
+    ? formatTime(currentTime)
+    : formatTime(Math.floor(Date.now() / 1000));
+
   return (
     <div className="glass-card p-4" style={{ maxWidth: 320, margin: "0 auto", borderRadius: 24 }}>
+      
+      
       <svg width={size} height={size} style={{ display: 'block', margin: '0 auto', width: '100%', height: 'auto' }}>
         {/* Night arc (upper half) */}
         <path d={nightArc} fill="none" stroke="#bdbdbd" strokeWidth="7" strokeDasharray="6,7" opacity="0.5" />
@@ -122,4 +173,4 @@ export default function SunPath({ sunrise, sunset, current }) {
       </svg>
     </div>
   );
-} 
+}

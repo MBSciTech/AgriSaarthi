@@ -10,6 +10,45 @@ export default function Profile() {
   const [form, setForm] = useState({});
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
+  const [savedPosts, setSavedPosts] = useState([]);
+  const [loadingSaved, setLoadingSaved] = useState(true);
+ 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:8000/api/users/profile/", {
+          headers: { Authorization: `Token ${token}` },
+        });
+        setProfile(res.data);
+        setForm(res.data);
+      } catch (err) {
+        setError("Failed to load profile.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const fetchSavedPosts = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:8000/api/farmers/blogs/saved/", {
+          headers: { Authorization: `Token ${token}` },
+        });
+        setSavedPosts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch saved posts", err);
+      } finally {
+        setLoadingSaved(false);
+      }
+    };
+  
+    fetchProfile();
+    fetchSavedPosts();
+  }, []);
+  
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -112,11 +151,10 @@ export default function Profile() {
     ],
     government_official: [
       { key: 'phone', label: 'Phone', icon: 'fa-phone' },
-      { key: 'email', label: 'Email', icon: 'fa-envelope' },
-      { key: 'designation', label: 'Designation', icon: 'fa-user-tie' },
-      { key: 'department', label: 'Department', icon: 'fa-building' },
+      { key: 'official_email', label: 'Official Email', icon: 'fa-envelope' },
+      { key: 'gov_designation', label: 'Designation', icon: 'fa-user-tie' },
+      { key: 'department_name', label: 'Department', icon: 'fa-building' },
       { key: 'region_of_responsibility', label: 'Region of Responsibility', icon: 'fa-map' },
-      { key: 'govt_id', label: 'Govt. ID', icon: 'fa-id-card' },
     ],
   };
 
@@ -326,6 +364,24 @@ export default function Profile() {
                         Save
                       </button>
                     </div>
+                    {profile.role === 'government_official' && (
+                      <div className="mb-3">
+                        <label className="form-label fw-semibold">
+                          <i className="fas fa-id-card me-2"></i>Govt. ID Badge
+                        </label>
+                        <input
+                          type="file"
+                          name="gov_id_badge"
+                          className="form-control form-control-lg"
+                          onChange={e => setForm({ ...form, gov_id_badge: e.target.files[0] })}
+                        />
+                        {profile.gov_id_badge && typeof profile.gov_id_badge === 'string' && (
+                          <div className="mt-2">
+                            <a href={profile.gov_id_badge} target="_blank" rel="noopener noreferrer">View Current ID Badge</a>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </form>
                 </div>
               )}
@@ -345,6 +401,50 @@ export default function Profile() {
           ) : null}
         </div>
       </div>
+      {/*Saved Post */}
+      <div className="container pb-5" style={{ maxWidth: 1080 }}>
+        <h4 className="text-white fw-bold mb-3">
+          <i className="fas fa-bookmark me-2"></i>Your Saved Posts
+        </h4>
+
+        {loadingSaved ? (
+          <div className="text-center py-4">
+            <div className="spinner-border text-light"></div>
+          </div>
+        ) : savedPosts.length === 0 ? (
+          <div className="glass-card p-4 text-center">
+            <i className="fas fa-bookmark fa-2x text-muted mb-2"></i>
+            <p className="text-muted mb-0">You haven't saved any posts yet.</p>
+          </div>
+        ) : (
+          savedPosts.map((blog) => (
+            <div style={{backgroundColor:'rgba(255, 255, 255, 0.71)',borderRadius:18}} key={blog.id} className="glass-card mb-4 p-3">
+              <div className="d-flex align-items-center mb-2">
+                <img
+                  src="/images/roles/expert_advisor.png"
+                  alt="Author"
+                  className="rounded-circle me-2"
+                  style={{ width: 40, height: 40 }}
+                />
+                <div>
+                  <h6 className="mb-0 fw-bold">{blog.author_name}</h6>
+                  <small className="text-muted">{new Date(blog.created_at).toLocaleString()}</small>
+                </div>
+              </div>
+              <p className="mb-2">{blog.content}</p>
+              {blog.image && (
+                <img
+                  src={blog.image}
+                  alt="Post"
+                  className="img-fluid rounded mb-2"
+                  style={{ maxHeight: 300, objectFit: 'cover' }}
+                />
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
     </div>
   );
 } 

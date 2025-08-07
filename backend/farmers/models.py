@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth import get_user_model
+from django.conf import settings
+
 
 ROLE_CHOICES = [
     ('farmer', 'Farmer'),
@@ -88,6 +91,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     license_gst_number = models.CharField(max_length=50, blank=True)
     buyer_dashboard_access = models.BooleanField(null=True, blank=True)
 
+    saved_posts = models.ManyToManyField('Blog', blank=True, related_name='saved_by_users')
+
+
     objects = UserManager()
 
     USERNAME_FIELD = 'phone'
@@ -95,3 +101,71 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.name} ({self.role})"
+
+class GovernmentScheme(models.Model):
+    name = models.CharField(max_length=255)
+    benefit = models.TextField()
+    eligibility = models.TextField()
+    docs = models.TextField(help_text="Required documents (comma-separated or description)")
+    apply_url = models.URLField()
+
+    def __str__(self):
+        return self.name
+
+
+
+
+# User = get_user_model()
+class Blog(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField(max_length=2000)
+    image = models.ImageField(upload_to='blogs/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_blogs', blank=True)
+    poll = models.OneToOneField('Poll', on_delete=models.SET_NULL, null=True, blank=True, related_name='blog')
+    visibility = models.CharField(max_length=10, choices=[('public', 'Public'), ('followers', 'Followers Only')], default='public')
+    tags = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"Post by {self.author.name} on {self.created_at.date()}"
+
+    def likes_count(self):
+        return self.likes.count()
+
+
+
+
+class Poll(models.Model):
+    question = models.CharField(max_length=255)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question
+
+
+class Choice(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='choices')
+    choice_text = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.choice_text
+
+
+class Vote(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    voted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('poll', 'voted_by')
+
+class Comment(models.Model):
+    blog = models.ForeignKey('Blog', on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField(max_length=300)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.author.name} on Blog #{self.blog.id}"

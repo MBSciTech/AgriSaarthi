@@ -10,9 +10,9 @@ import DashboardProfileForm from "../components/Farmer/DashboardProfileForm";
 const requiredFieldsByRole = {
   farmer: ["name", "phone", "state", "district", "village", "preferred_language", "type_of_farming", "main_crops", "farm_size", "voice_input_access", "receive_govt_alerts"],
   expert_advisor: ["name", "phone", "expertise_area", "experience_years", "state_of_operation", "languages_spoken", "available_for_consult"],
-  administrator: ["name", "email", "designation", "region_of_responsibility", "access_level", "employee_id", "admin_password"],
-  retailer: ["name", "business_name", "phone", "location", "type_of_business", "interested_crops", "buyer_dashboard_access"],
-  government_official: ["name", "email", "designation", "department", "region_of_responsibility", "govt_id"],
+  administrator: ["name", "email", "designation", "region_of_responsibility", "access_level", "employee_id"],
+  retailer: ["name", "business_name", "phone", "location", "type_of_business", "interested_crops"], // removed buyer_dashboard_access as required
+  government_official: ["name", "official_email", "gov_designation", "department_name", "region_of_responsibility"],
 };
 
 export default function Dashboard() {
@@ -45,10 +45,23 @@ export default function Dashboard() {
             console.warn(`[DEBUG] Missing or empty field: ${f}`);
           }
         });
-      } catch (err) {
-        setError("Failed to load profile.");
-        setLoading(false);
-      }
+              } catch (err) {
+          console.error("Error loading profile:", err);
+          if (err.response?.status === 401) {
+            setError("Authentication failed. Please login again.");
+            // Redirect to login if token is invalid
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+          } else if (err.response?.status === 400) {
+            setError("Bad request. Please check your data and try again.");
+            console.error("400 Error details:", err.response?.data);
+          } else if (err.response?.status === 500) {
+            setError("Server error. Please try again later.");
+          } else {
+            setError("Failed to load profile: " + (err.response?.data?.error || err.message));
+          }
+          setLoading(false);
+        }
     };
     fetchProfile();
   }, [submitted]);
@@ -58,7 +71,23 @@ export default function Dashboard() {
   }
 
   if (error) {
-    return <div className="container py-5 text-center text-danger">{error}</div>;
+    return (
+      <div className="container py-5 text-center">
+        <div className="glass-card p-5" style={{ maxWidth: 600 }}>
+          <div className="mb-4">
+            <i className="fas fa-exclamation-triangle fa-3x text-danger"></i>
+          </div>
+          <h4 className="text-danger mb-3">Error Loading Profile</h4>
+          <p className="text-muted mb-4">{error}</p>
+          <button 
+            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+          >
+            <i className="fas fa-refresh me-2"></i>Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!profile) {
@@ -68,13 +97,34 @@ export default function Dashboard() {
   // Check if profile is complete for the user's role
   const role = profile.role;
   const requiredFields = requiredFieldsByRole[role] || [];
-  const isProfileComplete = requiredFields.every(
-    (field) => profile[field] !== null && profile[field] !== "" && profile[field] !== undefined
-  );
+  
+  // Debug logging
+  console.log("Profile:", profile);
+  console.log("Role:", role);
+  console.log("Required fields:", requiredFields);
+  
+  const booleanFields = [
+    "voice_input_access",
+    "receive_govt_alerts",
+    "available_for_consult",
+    "portal_access_required",
+    "buyer_dashboard_access"
+  ];
 
-  // If not complete, show the form (for Farmer only for now)
+  const isProfileComplete = requiredFields.every((field) => {
+    const value = profile[field];
+    if (booleanFields.includes(field)) {
+      // Only require boolean fields to be not null/undefined
+      return value !== null && value !== undefined;
+    }
+    return value !== null && value !== "" && value !== undefined;
+  });
+  
+  console.log("Is profile complete:", isProfileComplete);
+
+  // If not complete, show the form
   if (!isProfileComplete && !submitted) {
-    if (role === "farmer") {
+    if (role === "farmer" || role === "government_official" || role === "expert_advisor" || role === "administrator" || role === "retailer") {
       return (
         <div
           className="min-vh-100 d-flex align-items-center justify-content-center"

@@ -1,6 +1,7 @@
 import React from "react";
 import DashboardNavbar from "../../components/common/DashboardNavbar";
 import AdministratorProfileForm from "../../components/Administrator/AdministratorProfileForm";
+import AdminPanel from "../../components/Administrator/AdminPanel";
 import GlassCard from "../../components/common/GlassCard";
 import ProfileCard from "../../components/common/ProfileCard";
 import WeatherCard from "../../components/common/WeatherCard";
@@ -36,17 +37,14 @@ export default function AdministratorDashboard({ profile = {} }) {
       <div className="container py-3 px-2 px-md-4 d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "5vh" }}>
         {/* Header */}
         <AdministratorDashboardHeader name={profile.name} />
-        {/* Dashboard Widgets */}
-        <div className="row g-4 w-100 h-100" style={{ maxWidth: 1200 }}>
-          <div className="col-12 col-md-6 col-lg-3">
-            <GlassCard>
-              <div className="d-flex align-items-center mb-3">
-                <i className="fas fa-user-shield fa-2x text-primary me-2"></i>
-                <h5 className="fw-bold mb-0">Profile</h5>
-              </div>
-              <AdministratorProfileForm profile={profile} />
-            </GlassCard>
-          </div>
+
+        {/* Admin Panel - Main Content */}
+        <div className="w-100 mb-4">
+          <AdminPanel profile={profile} />
+        </div>
+
+        {/* Quick Stats Widgets */}
+        <div className="row g-4 w-100" style={{ maxWidth: 1200 }}>
           <div className="col-12 col-md-6 col-lg-3">
             <WeatherCard />
           </div>
@@ -55,6 +53,15 @@ export default function AdministratorDashboard({ profile = {} }) {
           </div>
           <div className="col-12 col-md-6 col-lg-3">
             <AlertsCard />
+          </div>
+          <div className="col-12 col-md-6 col-lg-3">
+            <GlassCard>
+              <div className="d-flex align-items-center mb-3">
+                <i className="fas fa-user-shield fa-2x text-primary me-2"></i>
+                <h5 className="fw-bold mb-0">Profile</h5>
+              </div>
+              <AdministratorProfileForm profile={profile} />
+            </GlassCard>
           </div>
         </div>
       </div>

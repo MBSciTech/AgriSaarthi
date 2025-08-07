@@ -114,172 +114,184 @@ export default function DashboardProfileForm({ role, form, setForm, error, setEr
   ];
 
   return (
-    <form onSubmit={handleSubmit} encType="multipart/form-data">
-      <h2 className="mb-4 text-success text-center" style={{ fontWeight: 700, letterSpacing: 1 }}>
-        Complete Your {role.replace(/_/g, " ")} Profile
-      </h2>
-      <div className="row">
-        <div className="col-12 col-md-6">
-          {requiredFields.slice(0, Math.ceil(requiredFields.length / 2)).map((field) => (
-            <div className="mb-3" key={field}>
-              {booleanFields.includes(field) ? (
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id={field}
-                    name={field}
-                    checked={!!form[field]}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor={field}>
-                    {fieldLabels[field]?.label || field}
-                  </label>
-                </div>
-              ) : field === "access_level" ? (
-                <>
-                  <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
-                  <select
-                    className="form-select form-select-lg bg-light border-0 shadow-sm"
-                    style={{ borderRadius: 14, fontSize: 18 }}
-                    name={field}
-                    value={form[field] || ""}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select</option>
-                    {accessLevelOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
-                </>
-              ) : field === "type_of_business" ? (
-                <>
-                  <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
-                  <select
-                    className="form-select form-select-lg bg-light border-0 shadow-sm"
-                    style={{ borderRadius: 14, fontSize: 18 }}
-                    name={field}
-                    value={form[field] || ""}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select</option>
-                    {typeOfBusinessOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
-                </>
-              ) : (
-                <>
-                  <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
-                  <input
-                    type={field.toLowerCase().includes("password") ? "password" : "text"}
-                    name={field}
-                    value={form[field] || ""}
-                    onChange={handleChange}
-                    className="form-control form-control-lg bg-light border-0 shadow-sm"
-                    style={{ borderRadius: 14, fontSize: 18 }}
-                    required
-                  />
-                </>
-              )}
-            </div>
-          ))}
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 500 }}>
+      <div className="glass-card shadow-lg p-4 p-md-5 w-100" style={{ maxWidth: 700, borderRadius: 32, background: "rgba(255,255,255,0.92)", boxShadow: "0 8px 32px 0 rgba(34,139,34,0.12)", backdropFilter: "blur(12px)", border: "1.5px solid #e6f4ea" }}>
+        <div className="text-center mb-4">
+          <div className="d-inline-flex align-items-center justify-content-center mb-3" style={{ width: 70, height: 70, background: "linear-gradient(135deg, #10b981, #14b8a6)", borderRadius: 20, boxShadow: "0 6px 18px rgba(16, 185, 129, 0.18)" }}>
+            <i className="fas fa-user-edit text-white" style={{ fontSize: 32 }}></i>
+          </div>
+          <h2 className="mb-1 text-success fw-bold" style={{ letterSpacing: 1, fontSize: 28 }}>
+            Complete Your {role.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())} Profile
+          </h2>
+          <div className="text-muted mb-2" style={{ fontSize: 16 }}>
+            Please fill out all required fields to access your dashboard.
+          </div>
         </div>
-        <div className="col-12 col-md-6">
-          {requiredFields.slice(Math.ceil(requiredFields.length / 2)).map((field) => (
-            <div className="mb-3" key={field}>
-              {booleanFields.includes(field) ? (
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id={field}
-                    name={field}
-                    checked={!!form[field]}
-                    onChange={handleChange}
-                  />
-                  <label className="form-check-label" htmlFor={field}>
-                    {fieldLabels[field]?.label || field}
-                  </label>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <div className="row">
+            <div className="col-12 col-md-6">
+              {requiredFields.slice(0, Math.ceil(requiredFields.length / 2)).map((field) => (
+                <div className="mb-3" key={field}>
+                  {booleanFields.includes(field) ? (
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id={field}
+                        name={field}
+                        checked={!!form[field]}
+                        onChange={handleChange}
+                      />
+                      <label className="form-check-label" htmlFor={field}>
+                        {fieldLabels[field]?.label || field}
+                      </label>
+                    </div>
+                  ) : field === "access_level" ? (
+                    <>
+                      <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
+                      <select
+                        className="form-select form-select-lg bg-light border-0 shadow-sm"
+                        style={{ borderRadius: 14, fontSize: 18 }}
+                        name={field}
+                        value={form[field] || ""}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select</option>
+                        {accessLevelOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </>
+                  ) : field === "type_of_business" ? (
+                    <>
+                      <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
+                      <select
+                        className="form-select form-select-lg bg-light border-0 shadow-sm"
+                        style={{ borderRadius: 14, fontSize: 18 }}
+                        name={field}
+                        value={form[field] || ""}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select</option>
+                        {typeOfBusinessOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </>
+                  ) : (
+                    <>
+                      <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
+                      <input
+                        type={field.toLowerCase().includes("password") ? "password" : "text"}
+                        name={field}
+                        value={form[field] || ""}
+                        onChange={handleChange}
+                        className="form-control form-control-lg bg-light border-0 shadow-sm"
+                        style={{ borderRadius: 14, fontSize: 18 }}
+                        required
+                      />
+                    </>
+                  )}
                 </div>
-              ) : field === "access_level" ? (
-                <>
-                  <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
-                  <select
-                    className="form-select form-select-lg bg-light border-0 shadow-sm"
-                    style={{ borderRadius: 14, fontSize: 18 }}
-                    name={field}
-                    value={form[field] || ""}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select</option>
-                    {accessLevelOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
-                </>
-              ) : field === "type_of_business" ? (
-                <>
-                  <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
-                  <select
-                    className="form-select form-select-lg bg-light border-0 shadow-sm"
-                    style={{ borderRadius: 14, fontSize: 18 }}
-                    name={field}
-                    value={form[field] || ""}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select</option>
-                    {typeOfBusinessOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
-                </>
-              ) : (
-                <>
-                  <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
-                  <input
-                    type={field.toLowerCase().includes("password") ? "password" : "text"}
-                    name={field}
-                    value={form[field] || ""}
-                    onChange={handleChange}
-                    className="form-control form-control-lg bg-light border-0 shadow-sm"
-                    style={{ borderRadius: 14, fontSize: 18 }}
-                    required
-                  />
-                </>
-              )}
+              ))}
             </div>
-          ))}
-        </div>
+            <div className="col-12 col-md-6">
+              {requiredFields.slice(Math.ceil(requiredFields.length / 2)).map((field) => (
+                <div className="mb-3" key={field}>
+                  {booleanFields.includes(field) ? (
+                    <div className="form-check">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id={field}
+                        name={field}
+                        checked={!!form[field]}
+                        onChange={handleChange}
+                      />
+                      <label className="form-check-label" htmlFor={field}>
+                        {fieldLabels[field]?.label || field}
+                      </label>
+                    </div>
+                  ) : field === "access_level" ? (
+                    <>
+                      <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
+                      <select
+                        className="form-select form-select-lg bg-light border-0 shadow-sm"
+                        style={{ borderRadius: 14, fontSize: 18 }}
+                        name={field}
+                        value={form[field] || ""}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select</option>
+                        {accessLevelOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </>
+                  ) : field === "type_of_business" ? (
+                    <>
+                      <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
+                      <select
+                        className="form-select form-select-lg bg-light border-0 shadow-sm"
+                        style={{ borderRadius: 14, fontSize: 18 }}
+                        name={field}
+                        value={form[field] || ""}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select</option>
+                        {typeOfBusinessOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </>
+                  ) : (
+                    <>
+                      <label className="form-label fw-semibold">{fieldLabels[field]?.label || field}</label>
+                      <input
+                        type={field.toLowerCase().includes("password") ? "password" : "text"}
+                        name={field}
+                        value={form[field] || ""}
+                        onChange={handleChange}
+                        className="form-control form-control-lg bg-light border-0 shadow-sm"
+                        style={{ borderRadius: 14, fontSize: 18 }}
+                        required
+                      />
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Special file fields */}
+          {role === "expert_advisor" && (
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Certificates or ID (optional)</label>
+              <input type="file" name="certificates" className="form-control bg-light border-0 shadow-sm" style={{ borderRadius: 14 }} onChange={handleChange} />
+            </div>
+          )}
+          {role === "government_official" && (
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Government ID / Badge</label>
+              <input type="file" name="gov_id_badge" className="form-control bg-light border-0 shadow-sm" style={{ borderRadius: 14 }} onChange={handleChange} />
+            </div>
+          )}
+          {role === "farmer" && (
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Profile Image (optional)</label>
+              <input type="file" name="profile_image" className="form-control bg-light border-0 shadow-sm" style={{ borderRadius: 14 }} onChange={handleChange} />
+            </div>
+          )}
+          {error && <div className="alert alert-danger border-0" style={{ borderRadius: 14, fontSize: 16 }}>{error}</div>}
+          {success && <div className="alert alert-success border-0" style={{ borderRadius: 14, fontSize: 16 }}>{success}</div>}
+          <button type="submit" className="btn btn-success btn-lg w-100 fw-bold mt-2 shadow-sm" style={{ borderRadius: 14, background: "linear-gradient(135deg, #28a745 0%, #20c997 100%)", border: "none", fontSize: 20 }} disabled={loading}>
+            {loading ? "Saving..." : "Save Profile"}
+          </button>
+        </form>
       </div>
-      {/* Special file fields */}
-      {role === "expert_advisor" && (
-        <div className="mb-3">
-          <label className="form-label fw-semibold">Certificates or ID (optional)</label>
-          <input type="file" name="certificates" className="form-control bg-light border-0 shadow-sm" style={{ borderRadius: 14 }} onChange={handleChange} />
-        </div>
-      )}
-      {role === "government_official" && (
-        <div className="mb-3">
-          <label className="form-label fw-semibold">Government ID / Badge</label>
-          <input type="file" name="gov_id_badge" className="form-control bg-light border-0 shadow-sm" style={{ borderRadius: 14 }} onChange={handleChange} />
-        </div>
-      )}
-      {role === "farmer" && (
-        <div className="mb-3">
-          <label className="form-label fw-semibold">Profile Image (optional)</label>
-          <input type="file" name="profile_image" className="form-control bg-light border-0 shadow-sm" style={{ borderRadius: 14 }} onChange={handleChange} />
-        </div>
-      )}
-      {error && <div className="alert alert-danger border-0" style={{ borderRadius: 14, fontSize: 16 }}>{error}</div>}
-      {success && <div className="alert alert-success border-0" style={{ borderRadius: 14, fontSize: 16 }}>{success}</div>}
-      <button type="submit" className="btn btn-success btn-lg w-100 fw-bold mt-2 shadow-sm" style={{ borderRadius: 14, background: "linear-gradient(135deg, #28a745 0%, #20c997 100%)", border: "none", fontSize: 20 }} disabled={loading}>
-        {loading ? "Saving..." : "Save Profile"}
-      </button>
-    </form>
+    </div>
   );
 } 
