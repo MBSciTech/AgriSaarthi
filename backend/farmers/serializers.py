@@ -17,38 +17,31 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    # Start with only the most essential fields to avoid serialization issues
     class Meta:
         model = User
         fields = [
-            'id', 'phone', 'email', 'name', 'role', 'is_active', 'is_staff', 
-            'date_joined', 'profile_image'
+            'id', 'phone', 'email', 'name', 'role', 'is_active', 'is_staff',
+            'date_joined', 'profile_image',
+            # Farmer fields
+            'state', 'district', 'village', 'preferred_language', 'type_of_farming', 'main_crops', 'farm_size', 'voice_input_access', 'receive_govt_alerts',
+            # Expert Advisor fields
+            'expertise_area', 'experience_years', 'state_of_operation', 'languages_spoken', 'available_for_consult', 'certificates',
+            # Administrator fields
+            'designation', 'region_of_responsibility', 'access_level', 'employee_id',
+            # Government Official fields
+            'department_name', 'official_email', 'gov_designation', 'schemes_managed', 'gov_id_badge', 'portal_access_required',
+            # Retailer fields
+            'business_name', 'location', 'type_of_business', 'interested_crops', 'license_gst_number', 'buyer_dashboard_access',
         ]
         read_only_fields = ['id', 'date_joined']
-    
+
     def to_representation(self, instance):
-        """Custom representation to handle potential serialization issues"""
-        try:
-            data = super().to_representation(instance)
-            # Remove any None values that might cause issues
-            for key in list(data.keys()):
-                if data[key] is None:
-                    data[key] = ""
-            return data
-        except Exception as e:
-            print(f"DEBUG: Serialization error in UserProfileSerializer: {str(e)}")
-            # Return basic user info if serialization fails
-            return {
-                'id': instance.id,
-                'name': instance.name,
-                'phone': instance.phone or "",
-                'email': instance.email or "",
-                'role': instance.role or "",
-                'is_active': instance.is_active,
-                'is_staff': instance.is_staff,
-                'date_joined': instance.date_joined.isoformat() if instance.date_joined else "",
-                'error': f'Serialization error: {str(e)}'
-            }
+        data = super().to_representation(instance)
+        # Fill missing fields with empty string for frontend compatibility
+        for field in self.Meta.fields:
+            if field not in data or data[field] is None:
+                data[field] = ""
+        return data
 
 class GovernmentSchemeSerializer(serializers.ModelSerializer):
     class Meta:

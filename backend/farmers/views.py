@@ -1,3 +1,4 @@
+import requests
 from django.shortcuts import render
 from rest_framework import status, generics
 from rest_framework.views import APIView
@@ -8,12 +9,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import api_view
 from rest_framework import generics, permissions
-from .models import Blog
-from .serializers import BlogSerializer
-import requests
-from rest_framework import parsers
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from .models import Blog, Comment, Poll, Vote
 from .serializers import BlogSerializer, CommentSerializer, PollSerializer, VoteSerializer
 from rest_framework.decorators import api_view, permission_classes
@@ -22,6 +17,7 @@ from django.db.models import Count
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
 from django.utils import timezone
+from rest_framework import parsers
 
 
 from .serializers import (
@@ -30,6 +26,7 @@ from .serializers import (
     GovernmentSchemeSerializer
 )
 from .models import User, GovernmentScheme
+from django.contrib.auth import get_user_model
 
 #Weather API Key
 OPENWEATHER_API_KEY = "2a496ed70c4234605ff47cea15a3bd6a"
@@ -47,8 +44,9 @@ class UserRegisterView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+            if not isinstance(user, list):
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'token': token.key}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 🔐 User Login
@@ -69,45 +67,28 @@ class UserProfileView(APIView):
 
     def get(self, request):
         try:
-            print(f"DEBUG: UserProfileView GET called by user {request.user.name}")
-            print(f"DEBUG: User ID: {request.user.id}")
-            print(f"DEBUG: User Role: {request.user.role}")
-            
-            # Check if user has required fields
-            if not hasattr(request.user, 'name'):
-                print("DEBUG: User object missing 'name' field")
-                return Response({'error': 'User object is missing required fields'}, status=500)
-            
             serializer = UserProfileSerializer(request.user)
-            print(f"DEBUG: Serializer created successfully")
             data = serializer.data
-            print(f"DEBUG: Serialized data keys: {list(data.keys())}")
             return Response(data)
         except Exception as e:
-            print(f"DEBUG: Error in UserProfileView GET: {str(e)}")
-            import traceback
-            print(f"DEBUG: Full traceback: {traceback.format_exc()}")
             return Response({'error': f'Failed to serialize user profile: {str(e)}'}, status=500)
 
     def put(self, request):
         try:
-            print(f"DEBUG: UserProfileView PUT called by user {request.user.name}")
             role = request.data.get('role')
             serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
             if serializer.is_valid():
                 user = serializer.save()
-                if role == "administrator":
-                    user.is_staff = True
-                    user.save()
-                elif role:
-                    user.is_staff = False
-                    user.save()
+                if not isinstance(user, list) and hasattr(user, 'is_staff'):
+                    if role == "administrator":
+                        user.is_staff = True
+                        user.save()
+                    elif role:
+                        user.is_staff = False
+                        user.save()
                 return Response(serializer.data)
-            else:
-                print(f"DEBUG: Serializer errors: {serializer.errors}")
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print(f"DEBUG: Error in UserProfileView PUT: {str(e)}")
             return Response({'error': f'Failed to update user profile: {str(e)}'}, status=500)
 
 # 🌦️ Current Weather API
@@ -149,20 +130,70 @@ class WeatherForecastAPIView(APIView):
             return Response({'error': str(e)}, status=500)
 
 # 🏪 Market Price API
+import requests
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 class MarketPriceAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Mock market price data - replace with actual API
-        market_prices = {
-            "wheat": {"price": 2200, "unit": "per quintal", "trend": "up"},
-            "rice": {"price": 1800, "unit": "per quintal", "trend": "stable"},
-            "corn": {"price": 1500, "unit": "per quintal", "trend": "down"},
-            "sugarcane": {"price": 320, "unit": "per quintal", "trend": "up"},
-            "cotton": {"price": 6500, "unit": "per quintal", "trend": "stable"},
-            "soybean": {"price": 4200, "unit": "per quintal", "trend": "up"},
-        }
-        return Response(market_prices)
+        # 1. Get filter parameters from the frontend's request
+        commodity_filter = request.query_params.get('commodity', '').lower()
+        state_filter = request.query_params.get('state', '').lower()
+        district_filter = request.query_params.get('district', '').lower()
+
+        try:
+            # 2. Fetch the full dataset from the external API
+            api_url = "https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24"
+            params = {
+                "api-key": "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b",
+                "format": "json",
+                "limit": 1000 
+            }
+            response = requests.get(api_url, params=params, timeout=15)
+            response.raise_for_status()  # Raise an exception for bad status codes
+            data = response.json()
+            
+            all_records = data.get("records", [])
+
+            # 3. Filter the records on the backend
+            filtered_records = all_records
+
+            if state_filter:
+                filtered_records = [
+                    rec for rec in filtered_records 
+                    if rec.get('State', '').lower() == state_filter
+                ]
+
+            if district_filter:
+                filtered_records = [
+                    rec for rec in filtered_records 
+                    if rec.get('District', '').lower() == district_filter
+                ]
+
+            if commodity_filter:
+                filtered_records = [
+                    rec for rec in filtered_records 
+                    if commodity_filter in rec.get('Commodity', '').lower()
+                ]
+
+
+            # 4. Return the *filtered* data to the frontend
+            return Response({"records": filtered_records})
+
+        except requests.RequestException as e:
+            return Response(
+                {"error": "Failed to fetch data from external API.", "details": str(e)},
+                status=502  # Bad Gateway
+            )
+        except Exception as e:
+            return Response(
+                {"error": "An unexpected error occurred.", "details": str(e)},
+                status=500 # Internal Server Error
+            )
+
 
 # 🏛️ Government Schemes
 class GovernmentSchemeListAPIView(generics.ListAPIView):
@@ -243,7 +274,6 @@ def like_blog(request, blog_id):
     try:
         blog = Blog.objects.get(id=blog_id)
         user = request.user
-        
         if user in blog.likes.all():
             blog.likes.remove(user)
             return Response({'message': 'Blog unliked'}, status=200)
@@ -260,7 +290,6 @@ def toggle_save_post(request, blog_id):
     try:
         blog = Blog.objects.get(id=blog_id)
         user = request.user
-        
         if blog in user.saved_posts.all():
             user.saved_posts.remove(blog)
             return Response({'message': 'Post removed from saved'}, status=200)
@@ -381,8 +410,12 @@ class AdminUserListView(APIView):
             return Response({'error': 'Admin access required'}, status=403)
         
         users = User.objects.all().order_by('-date_joined')
-        serializer = UserProfileSerializer(users, many=True)
-        return Response(serializer.data)
+        try:
+            serializer = UserProfileSerializer(request.user)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({"error": "Something went wrong"}, status=500)
+
 
 class AdminUserDetailView(APIView):
     permission_classes = [IsAuthenticated]

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AdminModal from "./AdminModal";
 
+// Assuming 'profile' is passed as a prop, and 'token' is retrieved from localStorage as before.
 export default function AdminPanel({ profile }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [users, setUsers] = useState([]);
@@ -20,6 +21,7 @@ export default function AdminPanel({ profile }) {
   const [modalType, setModalType] = useState("");
   const [editingItem, setEditingItem] = useState(null);
 
+  // Reverting back to getting the token from local storage
   const token = localStorage.getItem("token");
   const config = { 
     headers: { 
@@ -62,7 +64,7 @@ export default function AdminPanel({ profile }) {
     setError("");
     try {
       const response = await axios.get("http://localhost:8000/api/admin/users/", config);
-      setUsers(response.data);
+      setUsers(response.data.results || response.data || []);
     } catch (err) {
       console.error("Error fetching users:", err);
       if (err.response?.status === 401) {
@@ -84,7 +86,7 @@ export default function AdminPanel({ profile }) {
     setError("");
     try {
       const response = await axios.get("http://localhost:8000/api/admin/blogs/", config);
-      setBlogs(response.data);
+      setBlogs(response.data.results || response.data || []);
     } catch (err) {
       console.error("Error fetching blogs:", err);
       if (err.response?.status === 401) {
@@ -106,7 +108,7 @@ export default function AdminPanel({ profile }) {
     setError("");
     try {
       const response = await axios.get("http://localhost:8000/api/admin/schemes/", config);
-      setSchemes(response.data);
+      setSchemes(response.data.results || response.data || []);
     } catch (err) {
       console.error("Error fetching schemes:", err);
       if (err.response?.status === 401) {
@@ -128,7 +130,7 @@ export default function AdminPanel({ profile }) {
     setError("");
     try {
       const response = await axios.get("http://localhost:8000/api/admin/stats/", config);
-      setStats(response.data);
+      setStats(response.data || {});
     } catch (err) {
       console.error("Error fetching stats:", err);
       if (err.response?.status === 401) {
@@ -272,7 +274,7 @@ export default function AdminPanel({ profile }) {
     <div className="row g-4">
       <div className="col-12 col-md-6 col-lg-3">
         <div className="glass-card p-4 text-center">
-          <div className="d-inline-flex align-items-center justify-content-center mb-3" 
+          <div className="d-inline-flex align-items-center justify-content-center mb-3"
                style={{ width: 60, height: 60, background: "linear-gradient(135deg, #10b981, #14b8a6)", borderRadius: 15 }}>
             <i className="fas fa-users text-white" style={{ fontSize: 24 }}></i>
           </div>
@@ -283,7 +285,7 @@ export default function AdminPanel({ profile }) {
       
       <div className="col-12 col-md-6 col-lg-3">
         <div className="glass-card p-4 text-center">
-          <div className="d-inline-flex align-items-center justify-content-center mb-3" 
+          <div className="d-inline-flex align-items-center justify-content-center mb-3"
                style={{ width: 60, height: 60, background: "linear-gradient(135deg, #3b82f6, #1d4ed8)", borderRadius: 15 }}>
             <i className="fas fa-blog text-white" style={{ fontSize: 24 }}></i>
           </div>
@@ -294,7 +296,7 @@ export default function AdminPanel({ profile }) {
       
       <div className="col-12 col-md-6 col-lg-3">
         <div className="glass-card p-4 text-center">
-          <div className="d-inline-flex align-items-center justify-content-center mb-3" 
+          <div className="d-inline-flex align-items-center justify-content-center mb-3"
                style={{ width: 60, height: 60, background: "linear-gradient(135deg, #f59e0b, #d97706)", borderRadius: 15 }}>
             <i className="fas fa-file-contract text-white" style={{ fontSize: 24 }}></i>
           </div>
@@ -305,7 +307,7 @@ export default function AdminPanel({ profile }) {
       
       <div className="col-12 col-md-6 col-lg-3">
         <div className="glass-card p-4 text-center">
-          <div className="d-inline-flex align-items-center justify-content-center mb-3" 
+          <div className="d-inline-flex align-items-center justify-content-center mb-3"
                style={{ width: 60, height: 60, background: "linear-gradient(135deg, #8b5cf6, #7c3aed)", borderRadius: 15 }}>
             <i className="fas fa-chart-line text-white" style={{ fontSize: 24 }}></i>
           </div>
@@ -364,7 +366,7 @@ export default function AdminPanel({ profile }) {
               </tr>
             </thead>
             <tbody>
-              {users.map(user => (
+              {Array.isArray(users) && users.map(user => (
                 <tr key={user.id}>
                   <td>
                     <div className="d-flex align-items-center">
@@ -387,20 +389,20 @@ export default function AdminPanel({ profile }) {
                   </td>
                   <td>{new Date(user.date_joined).toLocaleDateString()}</td>
                   <td>
-                                      <div className="btn-group btn-group-sm">
-                    <button className="btn btn-outline-primary btn-sm" 
-                            onClick={() => handleEditItem("user", user)} title="Edit">
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    <button className="btn btn-outline-warning btn-sm" 
-                            onClick={() => handleUserAction(user.id, "toggle_active")} title="Toggle Status">
-                      <i className="fas fa-toggle-on"></i>
-                    </button>
-                    <button className="btn btn-outline-danger btn-sm" 
-                            onClick={() => handleUserAction(user.id, "delete")} title="Delete">
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </div>
+                    <div className="btn-group btn-group-sm">
+                      <button className="btn btn-outline-primary btn-sm" 
+                              onClick={() => handleEditItem("user", user)} title="Edit">
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button className="btn btn-outline-warning btn-sm" 
+                              onClick={() => handleUserAction(user.id, "toggle_active")} title="Toggle Status">
+                        <i className="fas fa-toggle-on"></i>
+                      </button>
+                      <button className="btn btn-outline-danger btn-sm" 
+                              onClick={() => handleUserAction(user.id, "delete")} title="Delete">
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -426,7 +428,7 @@ export default function AdminPanel({ profile }) {
         </div>
       ) : (
         <div className="row g-4">
-          {blogs.map(blog => (
+          {Array.isArray(blogs) && blogs.map(blog => (
             <div key={blog.id} className="col-12 col-md-6 col-lg-4">
               <div className="glass-card p-3 h-100">
                 {blog.image && (
@@ -481,7 +483,7 @@ export default function AdminPanel({ profile }) {
         </div>
       ) : (
         <div className="row g-4">
-          {schemes.map(scheme => (
+          {Array.isArray(schemes) && schemes.map(scheme => (
             <div key={scheme.id} className="col-12 col-md-6 col-lg-4">
               <div className="glass-card p-3 h-100">
                 <h6 className="fw-bold mb-2">{scheme.name}</h6>
@@ -550,4 +552,4 @@ export default function AdminPanel({ profile }) {
       />
     </div>
   );
-} 
+}

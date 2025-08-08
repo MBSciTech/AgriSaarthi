@@ -30,7 +30,13 @@ export default function MarketCard({ profile }) {
         if (mainCrops[0]) params.append('commodity', mainCrops[0]);
         if (userState) params.append('state', userState);
         if (userDistrict) params.append('district', userDistrict);
-        const res = await axios.get(`http://localhost:8000/api/farmers/market-prices/?${params.toString()}`);
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`http://localhost:8000/api/farmers/market-prices/?${params.toString()}`, {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+
         const allRecords = res.data.records || [];
         setAllRecords(allRecords);
         // Filter records by main crops, state, and city (case-insensitive, partial match)

@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users/', include('farmers.urls')),
     path('api/farmers/', include('farmers.urls')),
-    path('api/', include('farmers.urls')),  # This will include all API endpoints including admin
+    path('api/', include('farmers.urls')), 
 ]
 
 if settings.DEBUG:

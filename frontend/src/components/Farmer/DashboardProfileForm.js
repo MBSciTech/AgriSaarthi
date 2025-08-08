@@ -22,27 +22,33 @@ export default function DashboardProfileForm({ role, form, setForm, error, setEr
     setSuccess("");
     setLoading(true);
     const token = localStorage.getItem("token");
-    let payload = form;
-    let config = { headers: { Authorization: `Token ${token}` } };
-    // If profile_image is a File, use FormData
-    if (form.profile_image instanceof File) {
-      const formData = new FormData();
-      Object.entries(form).forEach(([key, value]) => {
-        if (key === "profile_image") {
-          if (value) formData.append("profile_image", value);
-        } else {
-          formData.append(key, value);
-        }
-      });
-      payload = formData;
-      config.headers["Content-Type"] = "multipart/form-data";
-    } else {
-      // If profile_image is not a File, do not send it
-      const { profile_image, ...rest } = form;
-      payload = rest;
-    }
+  
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      // Convert experience_years to number if it's not a file
+      if (key === "experience_years") {
+        formData.append(key, Number(value));
+      } else if (
+        value instanceof File || 
+        key === "certificates" || 
+        key === "gov_id_badge" || 
+        key === "profile_image"
+      ) {
+        if (value) formData.append(key, value); // Only append if a file exists
+      } else {
+        formData.append(key, value);
+      }
+    });
+  
+    const config = {
+      headers: {
+        Authorization: `Token ${token}`,
+        // DON'T set content-type manually; browser will do it for FormData
+      }
+    };
+  
     try {
-      await axios.put("http://localhost:8000/api/users/profile/", payload, config);
+      await axios.put("http://localhost:8000/api/users/profile/", formData, config);
       setSuccess("Profile updated successfully!");
       setSubmitted(true);
     } catch (err) {
@@ -55,6 +61,7 @@ export default function DashboardProfileForm({ role, form, setForm, error, setEr
       setLoading(false);
     }
   };
+  
 
   // Field label and icon mapping
   const fieldLabels = {
